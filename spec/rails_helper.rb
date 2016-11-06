@@ -53,13 +53,17 @@ RSpec.configure do |config|
   # Sets up stubs for all tests
   config.before(:each) do
     @address = '1600 Pennsylvania Ave NW'
+    @lat = '38.8977332'
+    @lng = '-77.0365305'
+
     address_regex = /1600.*Pennsylvania.*Ave.*NW/
     maps_url = /.*maps.googleapis.com\/maps\/api\/geocode\/json.address=#{Regexp.new(address_regex)}/
     stub_request(:any, maps_url).to_return(body: File.new('spec/maps_response_body.txt'), status: 200)
 
-    @lat = '38.8977332'
-    @lng = '-77.0365305'
-    forecasts_url = /.*api.forecast.io\/forecast\/.*\/#{Regexp.new(@lat)},#{Regexp.new(@lng)}/
-    stub_request(:any, forecasts_url).to_return(body: File.new('spec/forecasts_response_body.txt'), status: 200)
+    old_forecasts_url = /.*api.forecast.io\/forecast\/.*\/#{Regexp.new(@lat)},#{Regexp.new(@lng)}/
+    stub_request(:any, old_forecasts_url).to_return(body: File.new('spec/forecasts_response_body.txt'), status: 200)
+
+    new_forecasts_url = /.*api.darksky.net\/forecast\/.*\/#{Regexp.new(@lat)},#{Regexp.new(@lng)}/
+    stub_request(:any, new_forecasts_url).to_return(body: File.new('spec/forecasts_response_body.txt'), status: 200)
   end
 end
